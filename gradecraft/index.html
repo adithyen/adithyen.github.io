@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GradeCraft — Apple Cupertino Interface</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      background-color: #000000;
+      color: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.012em;
+    }
+    .apple-pressable {
+      transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), opacity 120ms ease;
+      user-select: none;
+    }
+    .apple-pressable:active {
+      transform: scale(0.97);
+    }
+    .apple-card {
+      background: #1c1c1e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+    }
+    .apple-segmented-track {
+      background: rgba(118, 118, 128, 0.24);
+      padding: 3px;
+      border-radius: 12px;
+    }
+    .apple-segmented-thumb {
+      background: #636366;
+      color: #ffffff;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body class="bg-[#09090b] text-[#f4f4f5] p-4 sm:p-6 lg:p-8 xl:p-10 min-h-screen w-full">
+  
+  <div class="w-full space-y-6">
+
+    <!-- 1. APPLE NAVIGATION BAR -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-[#1c1c1e] border border-white/10 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+          🎓
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold tracking-tight text-white">GradeCraft</h1>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.08] text-[#98989d]">
+              KTU 2024
+            </span>
+          </div>
+          <p class="text-xs text-[#86868b]">B.Tech CSE (AI & ML) • Group A Curriculum</p>
+        </div>
+      </div>
+
+      <!-- Cloud Sync & Status Indicator -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1c1c1e] border border-white/[0.08] text-xs">
+          <span class="w-2 h-2 rounded-full bg-[#30d158]"></span>
+          <span class="text-[#98989d]">Neon PostgreSQL Online</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. APPLE ACTIVITY SUMMARY CARD (Displays Cumulative & Semester GPA) -->
+    <section class="apple-card rounded-3xl p-6 sm:p-7 shadow-2xl relative">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.06]">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#86868b] block mb-1">
+            Academic Projection
+          </span>
+          <h2 id="current-scenario-name" class="text-2xl font-bold tracking-tight text-white">
+            Balanced Scenario
+          </h2>
+        </div>
+
+        <!-- "Predict up to Semester X" Selector -->
+        <div class="flex items-center gap-2 bg-[#2c2c2e] p-1.5 rounded-2xl border border-white/[0.06]">
+          <span class="text-xs font-medium text-[#86868b] pl-2 whitespace-nowrap">
+            Predict up to:
+          </span>
+          <div class="flex items-center gap-1 overflow-x-auto py-0.5" id="predict-sem-btns">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
+        
+        <!-- Metric 1: CGPA -->
+        <div class="space-y-1">
+          <div class="flex items-center justify-between text-xs text-[#86868b]">
+            <span class="font-semibold uppercase tracking-wider">Cumulative CGPA</span>
+            <span id="cgpa-range-badge" class="px-1.5 py-0.5 rounded bg-white/[0.06] text-[10px] text-[#98989d]">
+              S1 – S5
+            </span>
+          </div>
+          <div id="cgpa-display" class="text-4xl sm:text-5xl font-extrabold text-[#30d158] tabular-nums">
+            8.92
+          </div>
+          <p id="classification-display" class="text-xs font-medium text-[#86868b]">
+            First Class with Distinction
+          </p>
+        </div>
+
+        <!-- Metric 2: SGPA -->
+        <div class="space-y-1 sm:border-l sm:border-white/[0.06] sm:pl-6">
+          <div class="flex items-center justify-between text-xs text-[#86868b]">
+            <span class="font-semibold uppercase tracking-wider">Selected Sem SGPA</span>
+            <span id="sgpa-sem-badge" class="px-1.5 py-0.5 rounded bg-[#0071e3]/20 text-[#0071e3] text-[10px] font-bold">
+              S5
+            </span>
+          </div>
+          <div id="sgpa-display" class="text-4xl sm:text-5xl font-extrabold text-white tabular-nums">
+            9.10
+          </div>
+          <p id="sem-credits-footnote" class="text-xs text-[#86868b]">
+            Graded: 22 cr • Challenged: 0 cr
+          </p>
+        </div>
+
+        <!-- Metric 3: Credits -->
+        <div class="space-y-1 sm:border-l sm:border-white/[0.06] sm:pl-6">
+          <div class="flex items-center justify-between text-xs text-[#86868b]">
+            <span class="font-semibold uppercase tracking-wider">Credits Earned</span>
+            <span class="text-[10px] text-[#98989d]">Degree: 170</span>
+          </div>
+          <div id="credits-display" class="text-4xl sm:text-5xl font-extrabold text-[#98989d] tabular-nums">
+            116 <span class="text-xl font-normal text-[#86868b]">/ 170</span>
+          </div>
+          <div class="w-full bg-[#2c2c2e] h-2 rounded-full overflow-hidden mt-2">
+            <div id="credits-progress-bar" class="bg-[#0071e3] h-full rounded-full transition-all duration-300" style="width: 68%;"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 3. SCENARIO / INSTANCE SELECTOR -->
+    <section class="apple-card rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+        <span class="text-xs font-semibold text-[#86868b] uppercase tracking-wider pl-1 whitespace-nowrap">
+          Scenarios:
+        </span>
+        <div id="scenario-pills" class="flex items-center gap-2">
+          <!-- Rendered by JS -->
+        </div>
+        <button onclick="createNewScenarioPrompt()" class="apple-pressable px-3 py-1.5 rounded-xl text-xs font-medium bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#0071e3] border border-[#0071e3]/30 whitespace-nowrap">
+          + New Scenario
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. CONTROLS BAR: SEMESTER TABS & INPUT MODE SWITCH -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      
+      <!-- Semester Tabs -->
+      <div class="apple-segmented-track inline-flex items-center gap-1 overflow-x-auto max-w-full no-scrollbar" id="semester-nav-tabs">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Mode Switch: GRADE MODE IS DEFAULT -->
+      <div class="apple-segmented-track inline-flex items-center gap-1 self-start sm:self-auto">
+        <button id="btn-mode-grades" onclick="setMode('grades')" class="apple-pressable px-3.5 py-1.5 rounded-lg text-xs font-semibold apple-segmented-thumb">
+          Grade Mode (Default)
+        </button>
+        <button id="btn-mode-marks" onclick="setMode('marks')" class="apple-pressable px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[#86868b] hover:text-white">
+          Marks Mode (CIE + ESE)
+        </button>
+      </div>
+
+    </div>
+
+    <!-- 5. CHALLENGED COURSE NOTICE -->
+    <div class="bg-[#1c1c1e] rounded-2xl p-4 border border-white/[0.06] flex items-center gap-3 text-xs text-[#86868b]">
+      <span class="text-[#ff9f0a] font-bold text-base">⚡</span>
+      <div>
+        <b class="text-[#ff9f0a]">Challenged Course Rule:</b> When a course is toggled as <b class="text-white">Challenged</b>, its credits count toward your <b class="text-white">Degree Total (170)</b>, but are <b class="text-[#ff9f0a]">strictly excluded</b> from the SGPA/CGPA denominator and formula.
+      </div>
+    </div>
+
+    <!-- 6. COURSES CONTAINER (Adaptive 3-4 Column Grid on Desktop, 1-Col on Mobile) -->
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4" id="course-cards-container">
+      <!-- Rendered by JS -->
+    </section>
+
+  </div>
+
+  <script>
+    const CURRICULUM = {
+      1: {
+        title: "Semester 1 (July - December)",
+        credits: 20,
+        courses: [
+          { id: "s1_1", slot: "A", code: "GAMAT101", name: "Mathematics for Information Science - 1", credits: 3, cieMax: 40, eseMax: 60, cie: 36, ese: 52, grade: "A+", isChallenged: false, isNoGP: false, type: "BSC" },
+          { id: "s1_2", slot: "B", code: "GAPHT121", name: "Physics for Information Science", credits: 4, cieMax: 40, eseMax: 60, cie: 34, ese: 48, grade: "A", isChallenged: false, isNoGP: false, type: "BSC" },
+          { id: "s1_3", slot: "C", code: "GMEST103", name: "Engineering Graphics & CAD", credits: 3, cieMax: 40, eseMax: 60, cie: 35, ese: 50, grade: "A+", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s1_4", slot: "D", code: "GXEST104", name: "Intro to Electrical & Electronics Eng.", credits: 4, cieMax: 40, eseMax: 60, cie: 35, ese: 49, grade: "A", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s1_5", slot: "F", code: "UCEST105", name: "Algorithmic Thinking with Python", credits: 4, cieMax: 40, eseMax: 60, cie: 38, ese: 55, grade: "S", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s1_6", slot: "L", code: "GXESL106", name: "Basic Electrical & Electronics Workshop", credits: 1, cieMax: 50, eseMax: 50, cie: 46, ese: 45, grade: "S", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s1_7", slot: "I", code: "UCPWT127", name: "Health and Wellness (Slot I)", credits: 1, cieMax: 50, eseMax: 0, cie: 45, ese: 0, grade: "P", isChallenged: false, isNoGP: true, type: "HMC" }
+        ]
+      },
+      2: {
+        title: "Semester 2 (January - June)",
+        credits: 24,
+        courses: [
+          { id: "s2_1", slot: "A", code: "GAMAT201", name: "Mathematics for Information Science - 2", credits: 3, cieMax: 40, eseMax: 60, cie: 36, ese: 53, grade: "A+", isChallenged: false, isNoGP: false, type: "BSC" },
+          { id: "s2_2", slot: "B", code: "GXCYT122", name: "Chemistry for Information Science", credits: 4, cieMax: 40, eseMax: 60, cie: 33, ese: 47, grade: "A", isChallenged: false, isNoGP: false, type: "BSC" },
+          { id: "s2_3", slot: "C", code: "GXEST203", name: "Foundations of Computing: HW to Web", credits: 3, cieMax: 40, eseMax: 60, cie: 37, ese: 54, grade: "S", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s2_4", slot: "D", code: "GXEST204", name: "Programming in C", credits: 4, cieMax: 40, eseMax: 60, cie: 38, ese: 56, grade: "S", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s2_5", slot: "E", code: "PCCST205", name: "Discrete Mathematics", credits: 4, cieMax: 40, eseMax: 60, cie: 34, ese: 48, grade: "A", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s2_6", slot: "F", code: "UCEST206", name: "Engineering Entrepreneurship & IPR", credits: 3, cieMax: 40, eseMax: 60, cie: 35, ese: 46, grade: "A", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s2_7", slot: "I", code: "UCHUT128", name: "Life Skills & Professional Comm. (Slot I)", credits: 1, cieMax: 100, eseMax: 0, cie: 85, ese: 0, grade: "P", isChallenged: false, isNoGP: true, type: "HMC" },
+          { id: "s2_8", slot: "L", code: "GXESL208", name: "IT Workshop", credits: 1, cieMax: 50, eseMax: 50, cie: 45, ese: 46, grade: "S", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s2_9", slot: "SEC", code: "UCSEM129", name: "Digital 101 NASSCOM MOOC", credits: 1, cieMax: 100, eseMax: 0, cie: 90, ese: 0, grade: "P", isChallenged: false, isNoGP: true, type: "SEC" }
+        ]
+      },
+      3: {
+        title: "Semester 3 (July - December)",
+        credits: 25,
+        courses: [
+          { id: "s3_1", slot: "A", code: "GAMAT301", name: "Mathematics for Information Science - 3", credits: 3, cieMax: 40, eseMax: 60, cie: 36, ese: 52, grade: "A+", isChallenged: false, isNoGP: false, type: "BSC" },
+          { id: "s3_2", slot: "B", code: "PCCST302", name: "Theory of Computation", credits: 4, cieMax: 40, eseMax: 60, cie: 35, ese: 50, grade: "A+", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s3_3", slot: "C", code: "PCCST303", name: "Data Structures and Algorithms", credits: 4, cieMax: 40, eseMax: 60, cie: 38, ese: 54, grade: "S", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s3_4", slot: "D", code: "PBCMT304", name: "Concepts in Machine Learning (PC-PBL)", credits: 4, cieMax: 60, eseMax: 40, cie: 55, ese: 36, grade: "S", isChallenged: false, isNoGP: false, type: "PBL" },
+          { id: "s3_5", slot: "F", code: "GAEST305", name: "Digital Electronics & Logic Design", credits: 4, cieMax: 40, eseMax: 60, cie: 34, ese: 48, grade: "A", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s3_6", slot: "G", code: "UCHUT346", name: "Economics for Engineers", credits: 2, cieMax: 50, eseMax: 50, cie: 43, ese: 42, grade: "A+", isChallenged: false, isNoGP: false, type: "HMC" },
+          { id: "s3_7", slot: "L", code: "PCCSL307", name: "Data Structures Lab", credits: 2, cieMax: 50, eseMax: 50, cie: 47, ese: 46, grade: "S", isChallenged: false, isNoGP: false, type: "PCL" },
+          { id: "s3_8", slot: "Q", code: "PCCSL308", name: "Digital Lab", credits: 2, cieMax: 50, eseMax: 50, cie: 46, ese: 46, grade: "S", isChallenged: false, isNoGP: false, type: "PCL" }
+        ]
+      },
+      4: {
+        title: "Semester 4 (January - June)",
+        credits: 24,
+        courses: [
+          { id: "s4_1", slot: "A", code: "GAMAT401", name: "Mathematics for Information Science - 4", credits: 3, cieMax: 40, eseMax: 60, cie: 36, ese: 53, grade: "A+", isChallenged: false, isNoGP: false, type: "BSC" },
+          { id: "s4_2", slot: "B", code: "PCCMT402", name: "Fundamentals of Artificial Intelligence", credits: 4, cieMax: 40, eseMax: 60, cie: 38, ese: 55, grade: "S", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s4_3", slot: "C", code: "PCCST403", name: "Operating Systems", credits: 4, cieMax: 40, eseMax: 60, cie: 35, ese: 50, grade: "A+", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s4_4", slot: "D", code: "PBCMT404", name: "Database Systems (PC-PBL)", credits: 4, cieMax: 60, eseMax: 40, cie: 54, ese: 36, grade: "A+", isChallenged: false, isNoGP: false, type: "PBL" },
+          { id: "s4_5", slot: "E", code: "PECMT41N", name: "PE-1: Software Engineering / Pattern Recognition", credits: 3, cieMax: 40, eseMax: 60, cie: 34, ese: 48, grade: "A", isChallenged: false, isNoGP: false, type: "PEC" },
+          { id: "s4_6", slot: "G", code: "UCHUT347", name: "Engineering Ethics & Sustainable Dev.", credits: 2, cieMax: 50, eseMax: 50, cie: 44, ese: 44, grade: "A+", isChallenged: false, isNoGP: false, type: "HMC" },
+          { id: "s4_7", slot: "L", code: "PCCSL407", name: "Operating Systems Lab", credits: 2, cieMax: 50, eseMax: 50, cie: 47, ese: 47, grade: "S", isChallenged: false, isNoGP: false, type: "PCL" },
+          { id: "s4_8", slot: "Q", code: "PCCML408", name: "Artificial Intelligence Lab", credits: 2, cieMax: 50, eseMax: 50, cie: 48, ese: 48, grade: "S", isChallenged: false, isNoGP: false, type: "PCL" }
+        ]
+      },
+      5: {
+        title: "Semester 5 (July - December)",
+        credits: 23,
+        courses: [
+          { id: "s5_1", slot: "A", code: "PCCST501", name: "Computer Networks", credits: 4, cieMax: 40, eseMax: 60, cie: 36, ese: 52, grade: "A+", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s5_2", slot: "B", code: "PCCST502", name: "Design and Analysis of Algorithms", credits: 4, cieMax: 40, eseMax: 60, cie: 37, ese: 53, grade: "A+", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s5_3", slot: "C", code: "PCCMT503", name: "Deep Learning Concepts", credits: 3, cieMax: 40, eseMax: 60, cie: 38, ese: 55, grade: "S", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s5_4", slot: "D", code: "PBCMT504", name: "Introduction to Computer Vision (PC-PBL)", credits: 4, cieMax: 60, eseMax: 40, cie: 55, ese: 36, grade: "S", isChallenged: false, isNoGP: false, type: "PBL" },
+          { id: "s5_5", slot: "E", code: "PECMT52N", name: "PE-2: Data Mining / Cloud Computing", credits: 3, cieMax: 60, eseMax: 40, cie: 52, ese: 34, grade: "A+", isChallenged: false, isNoGP: false, type: "PEC" },
+          { id: "s5_6", slot: "I", code: "UCHUM506", name: "Constitution of India (MOOC)", credits: 1, cieMax: 100, eseMax: 0, cie: 85, ese: 0, grade: "P", isChallenged: false, isNoGP: true, type: "HMC" },
+          { id: "s5_7", slot: "L", code: "PCCSL507", name: "Networks Lab", credits: 2, cieMax: 50, eseMax: 50, cie: 47, ese: 47, grade: "S", isChallenged: false, isNoGP: false, type: "PCL" },
+          { id: "s5_8", slot: "Q", code: "PCCML508", name: "Deep Learning Lab", credits: 2, cieMax: 50, eseMax: 50, cie: 48, ese: 49, grade: "S", isChallenged: false, isNoGP: false, type: "PCL" }
+        ]
+      },
+      6: {
+        title: "Semester 6 (January - June)",
+        credits: 23,
+        courses: [
+          { id: "s6_1", slot: "A", code: "PCCMT601", name: "Intro to Natural Language Processing", credits: 4, cieMax: 40, eseMax: 60, cie: 37, ese: 53, grade: "S", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s6_2", slot: "B", code: "PCCMT602", name: "Generative AI", credits: 3, cieMax: 40, eseMax: 60, cie: 38, ese: 55, grade: "S", isChallenged: false, isNoGP: false, type: "PCC" },
+          { id: "s6_3", slot: "C", code: "PECMT63N", name: "PE-3: Topics in Computing Systems / Testing", credits: 3, cieMax: 40, eseMax: 60, cie: 35, ese: 49, grade: "A", isChallenged: false, isNoGP: false, type: "PEC" },
+          { id: "s6_4", slot: "D", code: "PBCMT604", name: "Concepts in Data Analytics (PC-PBL)", credits: 4, cieMax: 60, eseMax: 40, cie: 55, ese: 36, grade: "S", isChallenged: false, isNoGP: false, type: "PBL" },
+          { id: "s6_5", slot: "F", code: "GAEST605", name: "Design Thinking & Product Dev.", credits: 2, cieMax: 40, eseMax: 60, cie: 36, ese: 50, grade: "A+", isChallenged: false, isNoGP: false, type: "ESC" },
+          { id: "s6_6", slot: "O", code: "OECMT61N", name: "OE-1: Open Elective 1", credits: 3, cieMax: 40, eseMax: 60, cie: 36, ese: 51, grade: "A+", isChallenged: false, isNoGP: false, type: "OEC" },
+          { id: "s6_7", slot: "L", code: "PCCML607", name: "Natural Language Processing Lab", credits: 2, cieMax: 50, eseMax: 50, cie: 47, ese: 47, grade: "S", isChallenged: false, isNoGP: false, type: "PCL" },
+          { id: "s6_8", slot: "P", code: "PCCMP608", name: "Mini Project: Socially Relevant Project", credits: 2, cieMax: 50, eseMax: 50, cie: 48, ese: 48, grade: "S", isChallenged: false, isNoGP: false, type: "PWS" }
+        ]
+      },
+      7: {
+        title: "Semester 7 (July - December)",
+        credits: 17,
+        courses: [
+          { id: "s7_1", slot: "A", code: "PECMT74N", name: "PE-4: Big Data / Responsible AI", credits: 3, cieMax: 40, eseMax: 60, cie: 36, ese: 52, grade: "A+", isChallenged: false, isNoGP: false, type: "PEC" },
+          { id: "s7_2", slot: "B", code: "PECMT75N", name: "PE-5: Computational Linguistics / IoT", credits: 3, cieMax: 40, eseMax: 60, cie: 35, ese: 50, grade: "A+", isChallenged: false, isNoGP: false, type: "PEC" },
+          { id: "s7_3", slot: "O", code: "OECMT72N", name: "OE-2: Cyber Security / Cloud Computing", credits: 3, cieMax: 40, eseMax: 60, cie: 37, ese: 54, grade: "S", isChallenged: false, isNoGP: false, type: "OEC" },
+          { id: "s7_4", slot: "I", code: "UEHUT704", name: "HMC Elective: Project Management / Foreign Lang.", credits: 2, cieMax: 50, eseMax: 50, cie: 45, ese: 45, grade: "P", isChallenged: false, isNoGP: true, type: "HMC" },
+          { id: "s7_5", slot: "S", code: "PCCMS705", name: "Seminar", credits: 2, cieMax: 50, eseMax: 0, cie: 48, ese: 0, grade: "S", isChallenged: false, isNoGP: false, type: "PWS" },
+          { id: "s7_6", slot: "P", code: "PCCMP706", name: "Major Project Phase - I / Internship", credits: 4, cieMax: 100, eseMax: 0, cie: 94, ese: 0, grade: "S", isChallenged: false, isNoGP: false, type: "PWS" }
+        ]
+      },
+      8: {
+        title: "Semester 8 (January - June)",
+        credits: 11,
+        courses: [
+          { id: "s8_1", slot: "A", code: "PECMT86N", name: "PE-6: Large Language Models / Prompt Eng.", credits: 3, cieMax: 40, eseMax: 60, cie: 38, ese: 56, grade: "S", isChallenged: false, isNoGP: false, type: "PEC" },
+          { id: "s8_2", slot: "O", code: "OECMT83N", name: "OE-3: Web Programming / Algorithms", credits: 3, cieMax: 40, eseMax: 60, cie: 37, ese: 54, grade: "S", isChallenged: false, isNoGP: false, type: "OEC" },
+          { id: "s8_3", slot: "I", code: "UEHUT803", name: "Organizational Behavior & Business Comm.", credits: 1, cieMax: 50, eseMax: 50, cie: 45, ese: 45, grade: "P", isChallenged: false, isNoGP: true, type: "HMC" },
+          { id: "s8_4", slot: "P", code: "PCCMP806", name: "Major Project Phase - II / Full Internship", credits: 4, cieMax: 100, eseMax: 0, cie: 96, ese: 0, grade: "S", isChallenged: false, isNoGP: false, type: "PWS" }
+        ]
+      }
+    };
+
+    const GRADE_POINTS = { 'S': 10.0, 'A+': 9.0, 'A': 8.5, 'B+': 8.0, 'B': 7.5, 'C+': 7.0, 'C': 6.5, 'D': 6.0, 'P': 5.5, 'F': 0.0 };
+    const GRADE_OPTIONS = ['S', 'A+', 'A', 'B+', 'B', 'C+', 'C', 'D', 'P', 'F'];
+
+    let instances = {
+      'lazy': { name: 'Lazy Study 😴', data: JSON.parse(JSON.stringify(CURRICULUM)) },
+      'medium': { name: 'Balanced 🎯', data: JSON.parse(JSON.stringify(CURRICULUM)) },
+      'hard': { name: 'Hard Work (9.5+) 🚀', data: JSON.parse(JSON.stringify(CURRICULUM)) }
+    };
+    
+    // Seed Lazy Study and Hard Work presets
+    Object.values(instances['lazy'].data).forEach(sem => sem.courses.forEach(c => { if (!c.isNoGP) { c.grade = 'B'; c.cie = Math.round(c.cieMax * 0.65); c.ese = Math.round(c.eseMax * 0.55); } }));
+    Object.values(instances['hard'].data).forEach(sem => sem.courses.forEach(c => { if (!c.isNoGP) { c.grade = 'S'; c.cie = Math.round(c.cieMax * 0.95); c.ese = Math.round(c.eseMax * 0.92); } }));
+
+    let activeInstance = 'medium';
+    let activeSem = 5;
+    let predictUpTo = 5; // Default predicts up to S5
+    let mode = 'grades'; // DEFAULT IS GRADE MODE
+
+    function calculateMarksGrade(cie, ese, cieMax, eseMax) {
+      cie = parseFloat(cie) || 0;
+      ese = parseFloat(ese) || 0;
+      if (eseMax === 0) {
+        const pct = (cie / cieMax) * 100;
+        if (pct < 50) return { grade: 'F', points: 0 };
+        if (pct >= 90) return { grade: 'S', points: 10 };
+        if (pct >= 85) return { grade: 'A+', points: 9.0 };
+        if (pct >= 80) return { grade: 'A', points: 8.5 };
+        if (pct >= 75) return { grade: 'B+', points: 8.0 };
+        if (pct >= 70) return { grade: 'B', points: 7.5 };
+        if (pct >= 65) return { grade: 'C+', points: 7.0 };
+        if (pct >= 60) return { grade: 'C', points: 6.5 };
+        if (pct >= 55) return { grade: 'D', points: 6.0 };
+        return { grade: 'P', points: 5.5 };
+      }
+      const esePct = (ese / eseMax) * 100;
+      const totalPct = ((cie + ese) / (cieMax + eseMax)) * 100;
+      if (esePct < 40 || totalPct < 50) return { grade: 'F', points: 0 };
+      if (totalPct >= 90) return { grade: 'S', points: 10 };
+      if (totalPct >= 85) return { grade: 'A+', points: 9.0 };
+      if (totalPct >= 80) return { grade: 'A', points: 8.5 };
+      if (totalPct >= 75) return { grade: 'B+', points: 8.0 };
+      if (totalPct >= 70) return { grade: 'B', points: 7.5 };
+      if (totalPct >= 65) return { grade: 'C+', points: 7.0 };
+      if (totalPct >= 60) return { grade: 'C', points: 6.5 };
+      if (totalPct >= 55) return { grade: 'D', points: 6.0 };
+      return { grade: 'P', points: 5.5 };
+    }
+
+    function renderPredictSemButtons() {
+      const el = document.getElementById('predict-sem-btns');
+      let html = '';
+      for (let s = 1; s <= 8; s++) {
+        const isSel = s === predictUpTo;
+        html += `
+          <button onclick="setPredictUpTo(${s})" class="apple-pressable px-2.5 py-1 rounded-xl text-xs font-semibold transition ${
+            isSel ? 'bg-[#0071e3] text-white shadow-sm' : 'text-[#86868b] hover:text-white'
+          }">S${s}</button>
+        `;
+      }
+      el.innerHTML = html;
+    }
+
+    function renderScenarioPills() {
+      const el = document.getElementById('scenario-pills');
+      let html = '';
+      Object.keys(instances).forEach(k => {
+        const isAct = k === activeInstance;
+        html += `
+          <button onclick="switchScenario('${k}')" class="apple-pressable px-3.5 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap ${
+            isAct ? 'bg-white text-black font-bold shadow-sm' : 'bg-[#2c2c2e] text-[#98989d] hover:text-white border border-white/[0.04]'
+          }">
+            ${instances[k].name}
+          </button>
+        `;
+      });
+      el.innerHTML = html;
+    }
+
+    function renderSemesterTabs() {
+      const el = document.getElementById('semester-nav-tabs');
+      let html = '';
+      for (let s = 1; s <= 8; s++) {
+        const isAct = s === activeSem;
+        html += `
+          <button onclick="selectSem(${s})" class="apple-pressable px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+            isAct ? 'apple-segmented-thumb font-bold' : 'text-[#86868b] hover:text-white'
+          }">S${s}</button>
+        `;
+      }
+      el.innerHTML = html;
+    }
+
+    function renderCourseCards() {
+      const semData = instances[activeInstance].data[activeSem];
+      const container = document.getElementById('course-cards-container');
+      let html = '';
+
+      semData.courses.forEach((c, idx) => {
+        let pts = GRADE_POINTS[c.grade] || 0;
+        let displayGrade = c.grade;
+
+        if (mode === 'marks') {
+          const res = calculateMarksGrade(c.cie, c.ese, c.cieMax, c.eseMax);
+          pts = res.points;
+          displayGrade = res.grade;
+        }
+
+        const isChallenged = c.isChallenged;
+        const isAudit = c.isNoGP;
+
+        html += `
+          <div class="apple-card rounded-2xl p-4 sm:p-5 border transition-all flex flex-col justify-between gap-3.5 ${
+            isChallenged ? 'border-[#ff9f0a]/40 bg-[#1c1c1e]/90' : 'border-white/[0.06]'
+          }">
+            <div>
+              
+              <!-- Info -->
+              <div class="space-y-1 flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#2c2c2e] text-white border border-white/10">
+                    Slot ${c.slot}
+                  </span>
+                  <span class="font-semibold text-sm sm:text-base text-white tracking-tight">
+                    ${c.name}
+                  </span>
+                  ${isChallenged ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff9f0a]/20 text-[#ff9f0a] border border-[#ff9f0a]/30">CHALLENGED</span>' : ''}
+                  ${isAudit ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.06] text-[#98989d]">Audit (No GP)</span>' : ''}
+                </div>
+                <div class="flex items-center gap-2 text-xs text-[#86868b] font-mono">
+                  <span>${c.code}</span>
+                  <span>•</span>
+                  <span class="font-sans font-medium text-white">${c.credits} Credits</span>
+                  <span>•</span>
+                  <span class="font-sans">${c.type}</span>
+                </div>
+                ${isChallenged ? `
+                  <div class="mt-2 text-[11px] text-[#ff9f0a] flex items-center gap-1.5 bg-[#ff9f0a]/10 px-2.5 py-1 rounded-lg border border-[#ff9f0a]/20">
+                    <span>⚡</span>
+                    <span><b>Challenged Course Active:</b> Credits (+${c.credits}) count for graduation requirement, excluded from SGPA & CGPA.</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+                
+                <!-- 1. GRADE MODE (DEFAULT) -->
+                ${mode === 'grades' && !isAudit ? `
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-[#86868b] sm:hidden">Grade:</span>
+                    <select onchange="updateGrade(${idx}, this.value)" class="apple-pressable bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white font-bold text-sm px-3.5 py-2 rounded-xl border border-white/10 focus:outline-none focus:border-[#0071e3] transition cursor-pointer min-w-[76px] text-center">
+                      ${GRADE_OPTIONS.map(g => `<option value="${g}" ${g === c.grade ? 'selected' : ''}>${g} (${GRADE_POINTS[g].toFixed(1)})</option>`).join('')}
+                    </select>
+                  </div>
+                ` : ''}
+
+                <!-- 2. MARKS MODE (CIE + ESE) -->
+                ${mode === 'marks' ? `
+                  <div class="flex items-center gap-3">
+                    <div class="space-y-0.5">
+                      <span class="text-[10px] uppercase font-semibold text-[#86868b] block">CIE (Max ${c.cieMax})</span>
+                      <input type="number" min="0" max="${c.cieMax}" value="${c.cie}" oninput="updateMarks(${idx}, 'cie', this.value)" 
+                             class="w-20 bg-[#2c2c2e] text-white font-semibold text-center text-sm px-2 py-1.5 rounded-xl border border-white/10 focus:outline-none focus:border-[#0071e3]" />
+                    </div>
+                    <div class="space-y-0.5">
+                      <span class="text-[10px] uppercase font-semibold text-[#86868b] block">ESE (Max ${c.eseMax})</span>
+                      <input type="number" min="0" max="${c.eseMax}" value="${c.ese}" oninput="updateMarks(${idx}, 'ese', this.value)" 
+                             ${c.eseMax === 0 ? 'disabled placeholder="-"' : ''}
+                             class="w-20 bg-[#2c2c2e] text-white font-semibold text-center text-sm px-2 py-1.5 rounded-xl border border-white/10 focus:outline-none focus:border-[#0071e3] ${c.eseMax === 0 ? 'opacity-30' : ''}" />
+                    </div>
+                  </div>
+                ` : ''}
+
+                <!-- 3. CHALLENGED TOGGLE PILL (Always visible, explicit label and explanation) -->
+                <div class="flex items-center justify-between sm:justify-start gap-2.5 px-3 py-1.5 rounded-xl border transition ${
+                  isChallenged ? 'border-[#ff9f0a]/50 bg-[#ff9f0a]/15 text-[#ff9f0a]' : 'border-white/[0.08] bg-[#2c2c2e]/60 text-white'
+                }">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-semibold whitespace-nowrap">
+                      Challenge Course
+                    </span>
+                    <span title="Challenged course rule: Credits count towards your 170 degree requirement, but are completely excluded from the SGPA/CGPA formula denominator and numerator." class="cursor-help text-[#86868b] hover:text-white text-xs select-none">
+                      ⓘ
+                    </span>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer apple-pressable">
+                    <input type="checkbox" ${isChallenged ? 'checked' : ''} onchange="toggleChallenged(${idx})" class="sr-only peer">
+                    <div class="w-10 h-5 bg-[#3a3a3c] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#ff9f0a]"></div>
+                  </label>
+                </div>
+
+                <!-- 4. POINTS READOUT -->
+                <div class="text-right min-w-[70px]">
+                  <span class="text-[10px] uppercase font-semibold text-[#86868b] block">Points</span>
+                  <div class="text-base sm:text-lg font-bold tabular-nums ${
+                    isChallenged ? 'text-[#86868b] line-through' : (isAudit ? 'text-[#98989d]' : 'text-[#30d158]')
+                  }">
+                    ${isChallenged ? '0.0' : (isAudit ? 'Pass' : (pts * c.credits).toFixed(1))}
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      const data = instances[activeInstance].data;
+
+      // 1. Semester SGPA
+      let semWeighted = 0;
+      let semGraded = 0;
+      let semChallenged = 0;
+
+      data[activeSem].courses.forEach(c => {
+        if (c.isChallenged) {
+          semChallenged += c.credits;
+          return;
+        }
+        if (c.isNoGP) return;
+
+        let p = GRADE_POINTS[c.grade] || 0;
+        if (mode === 'marks') {
+          p = calculateMarksGrade(c.cie, c.ese, c.cieMax, c.eseMax).points;
+        }
+        semWeighted += p * c.credits;
+        semGraded += c.credits;
+      });
+
+      const sgpa = semGraded > 0 ? (semWeighted / semGraded) : 0;
+      document.getElementById('sgpa-display').textContent = sgpa.toFixed(2);
+      document.getElementById('sgpa-sem-badge').textContent = `S${activeSem}`;
+      document.getElementById('sem-credits-footnote').textContent = `Graded: ${semGraded} cr • Challenged: ${semChallenged} cr`;
+
+      // 2. Cumulative CGPA up to predictUpTo
+      let cumWeighted = 0;
+      let cumGraded = 0;
+      let cumEarned = 0;
+
+      for (let s = 1; s <= predictUpTo; s++) {
+        data[s].courses.forEach(c => {
+          cumEarned += c.credits;
+          if (c.isChallenged || c.isNoGP) return;
+
+          let p = GRADE_POINTS[c.grade] || 0;
+          if (mode === 'marks') {
+            p = calculateMarksGrade(c.cie, c.ese, c.cieMax, c.eseMax).points;
+          }
+          cumWeighted += p * c.credits;
+          cumGraded += c.credits;
+        });
+      }
+
+      const cgpa = cumGraded > 0 ? (cumWeighted / cumGraded) : 0;
+      document.getElementById('cgpa-display').textContent = cgpa.toFixed(2);
+      document.getElementById('cgpa-range-badge').textContent = `S1 – S${predictUpTo}`;
+      document.getElementById('credits-display').innerHTML = `${cumEarned} <span class="text-xl font-normal text-[#86868b]">/ 170</span>`;
+      document.getElementById('credits-progress-bar').style.width = `${Math.min(100, (cumEarned / 170) * 100)}%`;
+
+      let cls = 'Pass';
+      if (cgpa >= 8.0) cls = 'First Class with Distinction';
+      else if (cgpa >= 6.5) cls = 'First Class';
+      else if (cgpa >= 5.5) cls = 'Second Class';
+      document.getElementById('classification-display').textContent = cls;
+      document.getElementById('current-scenario-name').textContent = instances[activeInstance].name;
+    }
+
+    function setPredictUpTo(s) {
+      predictUpTo = s;
+      renderPredictSemButtons();
+      updateCalculations();
+    }
+
+    function selectSem(s) {
+      activeSem = s;
+      renderSemesterTabs();
+      renderCourseCards();
+    }
+
+    function switchScenario(k) {
+      activeInstance = k;
+      renderScenarioPills();
+      renderCourseCards();
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      const btnGrades = document.getElementById('btn-mode-grades');
+      const btnMarks = document.getElementById('btn-mode-marks');
+      if (mode === 'grades') {
+        btnGrades.className = 'apple-pressable px-3.5 py-1.5 rounded-lg text-xs font-semibold apple-segmented-thumb';
+        btnMarks.className = 'apple-pressable px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[#86868b] hover:text-white';
+      } else {
+        btnMarks.className = 'apple-pressable px-3.5 py-1.5 rounded-lg text-xs font-semibold apple-segmented-thumb';
+        btnGrades.className = 'apple-pressable px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[#86868b] hover:text-white';
+      }
+      renderCourseCards();
+    }
+
+    function updateGrade(idx, val) {
+      instances[activeInstance].data[activeSem].courses[idx].grade = val;
+      renderCourseCards();
+    }
+
+    function updateMarks(idx, type, val) {
+      const c = instances[activeInstance].data[activeSem].courses[idx];
+      c[type] = parseFloat(val) || 0;
+      const res = calculateMarksGrade(c.cie, c.ese, c.cieMax, c.eseMax);
+      c.grade = res.grade;
+      updateCalculations();
+    }
+
+    function toggleChallenged(idx) {
+      const c = instances[activeInstance].data[activeSem].courses[idx];
+      c.isChallenged = !c.isChallenged;
+      renderCourseCards();
+    }
+
+    function createNewScenarioPrompt() {
+      const name = prompt("Enter scenario name (e.g., 'Exam Cram 💡', 'Target 8.5 🎯'):");
+      if (!name) return;
+      const key = 'inst_' + Date.now();
+      instances[key] = {
+        name: name,
+        data: JSON.parse(JSON.stringify(CURRICULUM))
+      };
+      activeInstance = key;
+      renderScenarioPills();
+      renderCourseCards();
+    }
+
+    // Init
+    renderPredictSemButtons();
+    renderScenarioPills();
+    renderSemesterTabs();
+    renderCourseCards();
+  </script>
+</body>
+</html>
